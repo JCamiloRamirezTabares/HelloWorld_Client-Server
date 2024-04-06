@@ -44,8 +44,10 @@ public class Client
             System.out.print(hostAndUser);
             String line = reader.readLine();
 
+            String request = hostAndUser + line;
+
             if(!line.equalsIgnoreCase("exit")){
-                String res = printer.printString(line);
+                String res = printer.printString(request);
                 System.out.println(res);
             } else{sentinel = false;}
 

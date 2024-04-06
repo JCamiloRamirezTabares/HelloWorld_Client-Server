@@ -12,11 +12,14 @@ public class PrinterI implements Demo.Printer
 {
     public String printString(String s, com.zeroc.Ice.Current current)
     {
+        System.out.println(s);
+        String[] parts = s.split(" ");
+        
         StringBuilder res = new StringBuilder();
         res.append("Server Response: ");
-        res.append(evaluateString(s));
 
-        System.out.println(res.toString());
+        res.append(evaluateString(parts[1]));
+
         return res.toString();
     }
 
