@@ -23,32 +23,36 @@ public class PrinterI implements Demo.Printer
     public String evaluateString(String s){
         String st = "";
 
-        try {
-            Number num = new Number(s);
-
-            if (num.isPositiveInteger()) {
-                st = "Fibonacci: " + fibonacci(num.getNumber()) + " And ";
-                st += num.primeFactors();
-            } else {
-                st = "Negative Number hasn't prime factors";
+        if(s != null){
+            try {
+                Number num = new Number(s);
+    
+                if (num.isPositiveInteger()) {
+                    st = "Fibonacci: " + fibonacci(num.getNumber()) + " And ";
+                    st += num.primeFactors();
+                } else {
+                    st = "Negative Number hasn't prime factors";
+                }
+            } catch (Exception e) {
+                st = "Error processing input: " + e.getMessage();
             }
-        } catch (Exception e) {
-            st = "Error processing input: " + e.getMessage();
-        }
-
-        if(s.equalsIgnoreCase("listifs")){
-            ListIfsCommand command = new ListIfsCommand();
-            st = command.sendResponse();
-        }
-
-        if (s.startsWith("listports")) {
-            ListPortsCommand command = new ListPortsCommand();
-            st = command.sendResponse(s.substring("listports".length()).trim());
-        }
-
-        if (s.startsWith("!")) {
-            ExecuteCommand command = new ExecuteCommand();
-            st = command.sendResponse(s.substring(1).trim());
+    
+            if(s.equalsIgnoreCase("listifs")){
+                ListIfsCommand command = new ListIfsCommand();
+                st = command.sendResponse();
+            }
+    
+            if (s.startsWith("listports")) {
+                ListPortsCommand command = new ListPortsCommand();
+                st = command.sendResponse(s.substring("listports".length()).trim());
+            }
+    
+            if (s.startsWith("!")) {
+                ExecuteCommand command = new ExecuteCommand();
+                st = command.sendResponse(s.substring(1).trim());
+            }
+        } else{
+            st = "Null string";
         }
 
         return st;

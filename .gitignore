@@ -3,6 +3,7 @@
 .vscode
 .settings
 .project
+credentials/
 
 # Ignore Gradle build output directory
 build
