@@ -10,15 +10,31 @@ import java.util.List;
 
 public class PrinterI implements Demo.Printer
 {
+    public int timeout = 0;
+    public int totalrequest = 0;
+    public int notProcessed = 0;
+
     public String printString(String s, com.zeroc.Ice.Current current)
-    {
+    {   
         System.out.println(s);
         String[] parts = s.split(" ");
         
         StringBuilder res = new StringBuilder();
         res.append("Server Response: ");
 
-        res.append(evaluateString(parts[1]));
+        try {
+            totalrequest++;
+            res.append(evaluateString(parts[1]));
+        } catch (com.zeroc.Ice.ConnectionTimeoutException e) {
+            timeout++;
+            notProcessed++;
+            res.append("Timeout: Request not completed within the specified time.");
+        } catch (Exception e) {
+            notProcessed++;
+            res.append("Error processing request: " + e.getMessage());
+        }
+
+        System.out.println("Total requests sent: " + totalrequest + ", requests not processed: " + notProcessed + "| not processed by timeout: " + timeout);
 
         return res.toString();
     }
