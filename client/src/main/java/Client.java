@@ -1,43 +1,56 @@
-import Demo.PrinterPrx;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.Exception;
+
+import com.zeroc.Ice.*;
+
+import AppInterfaces.ReceiverPrx;
+import AppInterfaces.RequesterPrx;
 
 public class Client
 {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private static String username;
+    private static String hostname;
+    private static RequesterPrx clientProxy;
+    private static ReceiverPrx serverProxy;
 
     public static void main(String[] args)
     {
-        java.util.List<String> extraArgs = new java.util.ArrayList<>();
+        initializeClient(args);
+    }
 
-        try(com.zeroc.Ice.Communicator communicator = com.zeroc.Ice.Util.initialize(args,"config.client",extraArgs))
+    public static void initializeClient(String[] args){
+        try(Communicator communicator = Util.initialize(args, "config.client"))
         {
-            //com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("SimplePrinter:default -p 10000");
-            Demo.PrinterPrx twoway = Demo.PrinterPrx.checkedCast(
-                communicator.propertyToProxy("Printer.Proxy")).ice_twoway().ice_secure(false);
-            //Demo.PrinterPrx printer = Demo.PrinterPrx.checkedCast(base);
-            Demo.PrinterPrx printer = twoway.ice_twoway();
-
-            if(printer == null)
-            {
-                throw new Error("Invalid proxy");
-            }
-
-
-            sendRequest(printer);
+            createServerPrx(communicator);
+            processRequest();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void sendRequest(PrinterPrx printer) throws IOException {
+    public static void createServerPrx(Communicator communicator){
+        serverProxy = AppInterfaces.ReceiverPrx.checkedCast(
+            communicator.propertyToProxy("Printer.Proxy")).ice_twoway().ice_secure(false);
+
+        if(serverProxy == null){
+            throw new Error("Invalid proxy");
+        }
+    }
+
+    public void createClientPrx(Communicator communicator){
+
+    }
+
+    public static void processRequest() throws IOException {
 
         boolean sentinel = true;
 
-        String username = System.getProperty("user.name");
-        String hostname = java.net.InetAddress.getLocalHost().getHostName();
+        username = System.getProperty("user.name");
+        hostname = java.net.InetAddress.getLocalHost().getHostName();
         String hostAndUser = username + "@" + hostname + ": ";
 
         while(sentinel){
@@ -47,10 +60,15 @@ public class Client
             String request = hostAndUser + line;
 
             if(!line.equalsIgnoreCase("exit")){
-                String res = printer.printString(request);
-                System.out.println(res);
+                Runnable runnable = () -> sendRequest(request);
+                Thread thread = new Thread(runnable);
+                thread.start();
             } else{sentinel = false;}
-
         }
+    }
+
+    private static void sendRequest(String request){
+        String res = serverProxy.printString(clientProxy, request);
+        System.out.println(res);
     }
 }

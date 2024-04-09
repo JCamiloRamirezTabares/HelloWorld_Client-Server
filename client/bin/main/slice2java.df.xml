@@ -1,10 +1,13 @@
 <state>
-  <timestamp value='1712465965184' />
+  <timestamp value='1712622254842' />
   <sourceSet name='default'>
-    <source name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\Printer.ice'>
-      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\Demo\Printer.java' />
-      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\Demo\PrinterPrx.java' />
-      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\Demo\_PrinterPrxI.java' />
+    <source name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\AppInterfaces.ice'>
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\Requester.java' />
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\Receiver.java' />
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\RequesterPrx.java' />
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\_RequesterPrxI.java' />
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\ReceiverPrx.java' />
+      <file name='C:\Users\juanc\Desktop\helloworld-ice\HelloWorld_Client-Server\client\build\generated-src\AppInterfaces\_ReceiverPrxI.java' />
     </source>
     <arg value='C:\Program Files\ZeroC\Ice-3.7.9\\bin\slice2java.exe' />
     <arg value='-IC:\Program Files\ZeroC\Ice-3.7.9\\slice' />
