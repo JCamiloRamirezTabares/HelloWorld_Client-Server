@@ -8,6 +8,7 @@ import com.zeroc.Ice.*;
 
 import AppInterfaces.ReceiverPrx;
 import AppInterfaces.RequesterPrx;
+import com.zeroc.Ice.Object;
 
 public class Client
 {
@@ -26,23 +27,30 @@ public class Client
         try(Communicator communicator = Util.initialize(args, "config.client"))
         {
             createServerPrx(communicator);
+            createClientPrx(communicator);
             processRequest();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void createServerPrx(Communicator communicator){
+    private static void createServerPrx(Communicator communicator){
         serverProxy = AppInterfaces.ReceiverPrx.checkedCast(
-            communicator.propertyToProxy("Printer.Proxy")).ice_twoway().ice_secure(false);
+            communicator.propertyToProxy("Server.Proxy")).ice_twoway().ice_secure(false);
 
         if(serverProxy == null){
             throw new Error("Invalid proxy");
         }
     }
 
-    public void createClientPrx(Communicator communicator){
+    private static void createClientPrx(Communicator communicator){
+        ObjectAdapter adapter = communicator.createObjectAdapter("Client");
+        Object servent = new RequesterI();
+        adapter.add(servent, Util.stringToIdentity("Requester"));
+        adapter.activate();
 
+        clientProxy = RequesterPrx.checkedCast(
+                adapter.createProxy(Util.stringToIdentity("Requester")).ice_twoway().ice_secure(false));
     }
 
     public static void processRequest() throws IOException {
@@ -51,24 +59,21 @@ public class Client
 
         username = System.getProperty("user.name");
         hostname = java.net.InetAddress.getLocalHost().getHostName();
-        String hostAndUser = username + "@" + hostname + ": ";
 
         while(sentinel){
+            String hostAndUser = username + "@" + hostname + ": ";
             System.out.print(hostAndUser);
             String line = reader.readLine();
 
             String request = hostAndUser + line;
 
             if(!line.equalsIgnoreCase("exit")){
-                Runnable runnable = () -> sendRequest(request);
-                Thread thread = new Thread(runnable);
-                thread.start();
+                sendRequest(request);
             } else{sentinel = false;}
         }
     }
 
     private static void sendRequest(String request){
         String res = serverProxy.printString(clientProxy, request);
-        System.out.println(res);
     }
 }

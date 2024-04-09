@@ -34,7 +34,12 @@ public class ReceiverI implements Receiver
 
         try {
             totalRequests++;
-            res.append(evaluateString(parts[1]));
+            Runnable runnable = () -> {
+                String response = evaluateString(parts[1]);
+                res.append(response);
+                requester.printString(res.toString());
+            };
+            executorService.submit(runnable);
         } catch (com.zeroc.Ice.ConnectionTimeoutException e) {
             timeout++;
             unprocessed++;

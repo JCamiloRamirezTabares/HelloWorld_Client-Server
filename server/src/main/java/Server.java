@@ -20,9 +20,9 @@ public class Server
     }
 
     public static void createAdapter(Communicator communicator){
-        ObjectAdapter adapter = communicator.createObjectAdapter("Printer");
+        ObjectAdapter adapter = communicator.createObjectAdapter("Server");
         Object servent = new ReceiverI();
-        adapter.add(servent, Util.stringToIdentity("SimplePrinter"));
+        adapter.add(servent, Util.stringToIdentity("Receiver"));
         adapter.activate();
     }
 

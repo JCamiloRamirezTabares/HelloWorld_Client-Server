@@ -11,7 +11,7 @@ public class FibonacciComand extends Command{
             Number num = new Number(s);
 
             if (num.isPositiveInteger()) {
-                out = "Fibonacci: " + fibonacci(num.getNumber()) + " And ";
+                out = "Fibonacci of (" + num.getNumber() + "): " + fibonacci(num.getNumber()) + "\n";
                 out += num.primeFactors();
             } else {
                 out = "Negative Number hasn't prime factors";
