@@ -1,5 +1,7 @@
 package commands;
 
+import AppInterfaces.RequesterPrx;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -7,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 public class ListIfsCommand extends Command{
 
     @Override
-    public void excecuteCommand(String s) {
+    protected void executeCommand(String s, RequesterPrx proxy) {
         StringBuilder out = new StringBuilder();
         String line;
         try {

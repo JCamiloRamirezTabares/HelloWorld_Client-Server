@@ -12,11 +12,14 @@ import com.zeroc.Ice.Object;
 
 public class Client
 {
-    private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
     private static String username;
     private static String hostname;
     private static RequesterPrx clientProxy;
     private static ReceiverPrx serverProxy;
+
+
+    private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args)
     {
@@ -69,11 +72,14 @@ public class Client
 
             if(!line.equalsIgnoreCase("exit")){
                 sendRequest(request);
-            } else{sentinel = false;}
+            } else{
+                sentinel = false;
+                sendRequest(request);
+            }
         }
     }
 
     private static void sendRequest(String request){
-        String res = serverProxy.printString(clientProxy, request);
+        serverProxy.printString(clientProxy, request);
     }
 }

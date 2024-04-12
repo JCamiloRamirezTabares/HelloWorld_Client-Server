@@ -1,5 +1,7 @@
 package commands;
 
+import AppInterfaces.RequesterPrx;
+
 public abstract class Command {
 
     protected long startTime;
@@ -13,13 +15,13 @@ public abstract class Command {
         output = "";
     }
 
-    public void execute(String s){
+    public void execute(String s, RequesterPrx proxy){
         startTime = System.currentTimeMillis();
-        excecuteCommand(s);
+        executeCommand(s, proxy);
         endTime = System.currentTimeMillis();
     }
 
-    protected void excecuteCommand(String s){}
+    protected void executeCommand(String s, RequesterPrx proxy){}
 
     public void setOutput(String o){
         output = o;
@@ -27,5 +29,9 @@ public abstract class Command {
 
     public String getOutput(){
         return output;
+    }
+
+    public long getLatency(){
+        return endTime - startTime;
     }
 }

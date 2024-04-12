@@ -1,5 +1,7 @@
 package commands;
 
+import AppInterfaces.RequesterPrx;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -10,7 +12,7 @@ import java.util.List;
 public class ListPortsCommand extends Command{
 
     @Override
-    public void excecuteCommand(String s) {
+    protected void executeCommand(String s, RequesterPrx proxy) {
         StringBuilder out = new StringBuilder();
 
         try {

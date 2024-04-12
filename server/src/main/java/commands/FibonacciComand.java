@@ -1,29 +1,35 @@
 package commands;
 
+import AppInterfaces.RequesterPrx;
+
 public class FibonacciComand extends Command{
+
+    private Number number;
+
+    public FibonacciComand(String s){
+        try {
+            number = new Number(s);
+        } catch (Exception e) {
+            setOutput("Error processing input: " + e.getMessage());
+        }
+    }
     
     @Override
-    public void excecuteCommand(String s) {
+    protected void executeCommand(String s, RequesterPrx proxy) {
 
         String out = "";
 
-        try {
-            Number num = new Number(s);
-
-            if (num.isPositiveInteger()) {
-                out = "Fibonacci of (" + num.getNumber() + "): " + fibonacci(num.getNumber()) + "\n";
-                out += num.primeFactors();
-            } else {
-                out = "Negative Number hasn't prime factors";
-            }
-        } catch (Exception e) {
-            out = "Error processing input: " + e.getMessage();
+        if (number.isPositiveInteger()) {
+            out = "Fibonacci of (" + number.getNumber() + "): " + fibonacci(number.getNumber()) + "\n";
+            out += number.primeFactors();
+        } else {
+            out = "Negative Number hasn't prime factors";
         }
 
         setOutput(out);
     }
 
-    public Integer fibonacci(Integer num){
+    public long fibonacci(long num){
         if (num <= 1) {
             return num;
         }
@@ -34,12 +40,12 @@ public class FibonacciComand extends Command{
 }
 
 class Number {
-    private Integer num;
+    private long num;
     public Number(String n){
-        num = Integer.parseInt(n);
+        num = Long.parseLong(n);
     }
 
-    public Integer getNumber(){
+    public long getNumber(){
         return num;
     }
 

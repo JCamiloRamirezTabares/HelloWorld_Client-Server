@@ -3,6 +3,8 @@ import com.zeroc.Ice.Object;
 
 public class Server
 {
+
+    private static Communicator communicator;
     public static void main(String[] args)
     {
         initializeServer(args);
@@ -10,8 +12,9 @@ public class Server
 
 
     public static void initializeServer(String[] args){
-        try(Communicator communicator = Util.initialize(args,"config.server"))
+        try(Communicator c = Util.initialize(args,"config.server"))
         {
+            communicator = c;
             createAdapter(communicator);
             System.out.println("Server has been started");
 
@@ -24,6 +27,12 @@ public class Server
         Object servent = new ReceiverI();
         adapter.add(servent, Util.stringToIdentity("Receiver"));
         adapter.activate();
+    }
+
+    public static void shutdown(){
+        if (communicator != null) {
+            communicator.shutdown();
+        }
     }
 
 }
