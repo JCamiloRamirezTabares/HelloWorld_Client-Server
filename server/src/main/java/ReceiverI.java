@@ -140,11 +140,15 @@ public class ReceiverI implements Receiver
 
     //Quality Attributes
     private double throughput(){
-        return processed / (startTime);
+        long currentTime = System.currentTimeMillis() / 1000;
+        double throughput = (double) processed / (currentTime - startTime);
+        return Math.round(throughput * 1000) / 1000.0;
     }
 
+
     private double unprocessedRate(){
-        return (double) unprocessed / totalRequests;
+        double rate = (double) unprocessed / totalRequests;
+        return Math.round(rate * 1000) / 1000.0;
     }
 
     //IsPending to Do
@@ -157,6 +161,7 @@ public class ReceiverI implements Receiver
         System.out.println("Unprocessed Rate: "+unprocessedRate() * 100+"%");
         System.out.println("=====================================================");
     }
+
 
 
     private void stopExecutorService() {
