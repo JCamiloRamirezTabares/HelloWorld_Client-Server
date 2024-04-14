@@ -136,13 +136,25 @@ public class ReceiverI implements Receiver
 
 
     //Quality Attributes
+    private long startTime = System.nanoTime();  // Iniciar el tiempo al iniciar el servidor o el procesamiento
+
     private double throughput(){
-        return processed / (System.nanoTime());
+        long elapsedTime = System.nanoTime() - startTime;
+        if (elapsedTime > 0) {
+            return (double) processed / (elapsedTime / 1e9);  // Convertir a segundos
+        }
+        return 0.0;
     }
 
+
     private double unprocessedRate(){
-        return unprocessed / totalRequests;
+        if (totalRequests > 0) {
+            return (double) unprocessed / totalRequests * 100;
+        }
+        return 0.0;
     }
+
+
 
     //IsPending to Do
     private long missingRate(){
@@ -150,10 +162,11 @@ public class ReceiverI implements Receiver
     }
 
     private void measuringAttributes(){
-        System.out.println("Throughput: "+throughput() + " requests per nanosecond");
-        System.out.println("Unprocessed Rate: "+unprocessedRate() * 100+"%");
+        System.out.println("Throughput: "+throughput() + " requests per second");  // Cambiado de "per nanosecond" a "per second"
+        System.out.println("Unprocessed Rate: "+ unprocessedRate() +"%");  // Removida la multiplicación extra por 100
         System.out.println("=====================================================");
     }
+
 
 
     private void stopExecutorService() {
