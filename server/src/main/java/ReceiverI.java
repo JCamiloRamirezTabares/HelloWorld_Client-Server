@@ -136,15 +136,11 @@ public class ReceiverI implements Receiver
 
 
     //Quality Attributes
-    private long throughput(){
+    private double throughput(){
         return processed / (System.nanoTime());
     }
 
-    private long unprocessedRate(){
-        System.out.println("unprocessed " + unprocessed);
-        System.out.println("total " + totalRequests);
-
-
+    private double unprocessedRate(){
         return unprocessed / totalRequests;
     }
 
