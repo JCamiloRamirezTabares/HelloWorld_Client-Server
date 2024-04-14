@@ -14,6 +14,8 @@ public class ReceiverI implements Receiver
     private int unprocessed;
     private int processed;
 
+    private long startTime;
+
     public ReceiverI(){
         totalRequests = 0;
         unprocessed = 0;
@@ -21,6 +23,7 @@ public class ReceiverI implements Receiver
 
         clients = new ConcurrentHashMap<>();
         executorService = Executors.newCachedThreadPool();
+        startTime = System.currentTimeMillis() / 1000;
     }
 
     @Override
@@ -137,11 +140,11 @@ public class ReceiverI implements Receiver
 
     //Quality Attributes
     private double throughput(){
-        return processed / (System.nanoTime());
+        return processed / (startTime);
     }
 
     private double unprocessedRate(){
-        return unprocessed / totalRequests;
+        return (double) unprocessed / totalRequests;
     }
 
     //IsPending to Do
@@ -150,7 +153,7 @@ public class ReceiverI implements Receiver
     }
 
     private void measuringAttributes(){
-        System.out.println("Throughput: "+throughput() + " requests per nanosecond");
+        System.out.println("Throughput: "+throughput() + " requests per second");
         System.out.println("Unprocessed Rate: "+unprocessedRate() * 100+"%");
         System.out.println("=====================================================");
     }
