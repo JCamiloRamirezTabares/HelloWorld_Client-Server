@@ -1,7 +1,7 @@
 password=$(<../credentials/password.txt)
 
 devices=("hgrid5" "hgrid6" "hgrid7" "hgrid8" "hgrid9" "hgrid10" 
-"hgrid11" "hgrid12" "hgrid13" "hgrid14" "hgrid15")
+"hgrid11" "hgrid12" "hgrid13" "hgrid14" "hgrid15" "hgrid17")
 
 for device in "${devices[@]}"
 do

@@ -1,6 +1,8 @@
 password=$(<../credentials/password.txt)
 
-clients=("hgrid6" "hgrid7" "hgrid8" "hgrid9" "hgrid10" "hgrid11" "hgrid12" "hgrid13" "hgrid15")
+clients=("hgrid6" "hgrid7" "hgrid8" "hgrid9" "hgrid10"
+                "hgrid11" "hgrid13" "hgrid14" "hgrid17")
+
 
 fibonacci_number=46 # El número de Fibonacci que deseas calcular
 

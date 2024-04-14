@@ -1,7 +1,5 @@
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import AppInterfaces.Receiver;
 import AppInterfaces.RequesterPrx;
@@ -12,13 +10,14 @@ public class ReceiverI implements Receiver
 {
     private final ConcurrentHashMap<String, RequesterPrx> clients;
     private final ExecutorService executorService;
-    public int timeout = 0;
     private int totalRequests;
-    private int unprocessed;
+    private int missing;
+    private int processed;
 
     public ReceiverI(){
         totalRequests = 0;
-        unprocessed = 0;
+        missing = 0;
+        processed = 0;
 
         clients = new ConcurrentHashMap<>();
         executorService = Executors.newCachedThreadPool();
@@ -27,24 +26,38 @@ public class ReceiverI implements Receiver
     @Override
     public String printString(RequesterPrx requester, String s, Current current) {
         System.out.println(s);
+
         totalRequests++;
+        processRequest(s, requester);
 
-        return processRequest(s, requester);
+
+        return "";
     }
 
-    private String processRequest(String s, RequesterPrx proxy){
-
-        Runnable runnable = () -> {
-            String response = constructResponse(s, proxy);
-            proxy.printString(response);
-        };
-
-        executorService.submit(runnable);
-
+    private void processRequest(String s, RequesterPrx proxy) {
         System.out.println("Total requests received: " + totalRequests);
+        CompletableFuture.supplyAsync(() -> constructResponse(s, proxy), executorService)
+                .orTimeout(60, TimeUnit.SECONDS)
+                .thenAccept(response -> {
+                    proxy.printString(response);
+                    processed++;
+                    System.out.println("Total requests processed: " + processed);
+                    System.out.println("Total requests missed: " + missing);
+                })
+                .exceptionally(e -> {
+                    missing++;
+                    if (e.getCause() instanceof TimeoutException) {
+                        proxy.printString("Timeout occurred, unable to complete your request :c");
+                    } else {
+                        proxy.printString("Task cannot be processed: " + e.getMessage());
+                    }
+                    System.out.println("Total requests processed: " + processed);
+                    System.out.println("Total requests missed: " + missing);
 
-        return "Your response is being processed";
+                    return null;
+                });
     }
+
 
     private String constructResponse(String request, RequesterPrx proxy){
 
@@ -103,12 +116,6 @@ public class ReceiverI implements Receiver
             }
 
 
-            if(requestString.equalsIgnoreCase("exit")) {
-                stopExecutorService();
-                serverShutdown();
-            }
-
-
             command.execute(requestString, proxy);
 
 
@@ -118,10 +125,21 @@ public class ReceiverI implements Receiver
 
         res.append(command.getOutput() + "\n");
         res.append("=====================================================");
-        System.out.println("Server latency: " + command.getLatency() + " milliseconds");
+        System.out.println("Server latency: " + command.getLatency() + " microseconds");
 
         return res.toString();
     }
+
+
+    //Quality Attributes
+    private long throughput(){
+        return processed / (System.currentTimeMillis()/1000);
+    }
+
+    private long missingRate(){
+        return missing / totalRequests;
+    }
+
 
     private void stopExecutorService() {
         executorService.shutdown();

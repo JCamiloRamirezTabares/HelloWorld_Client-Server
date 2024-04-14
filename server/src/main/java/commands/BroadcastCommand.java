@@ -14,7 +14,7 @@ public class BroadcastCommand extends Command{
 
     @Override
     protected void executeCommand(String s, RequesterPrx proxy) {
-        if(map != null){
+        if(!map.isEmpty()){
             if(!s.isEmpty()){
                 map.keySet().forEach((String client) -> {
                     map.get(client).printString(s);

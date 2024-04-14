@@ -12,4 +12,4 @@ Ice.Default.Host=localhost
 # localhost must be defines with the client's host
 Client.Endpoints=tcp -h localhost
 
-Ice.Default.InvocationTimeout=1000
+Ice.Default.Timeout=1000

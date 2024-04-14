@@ -16,9 +16,9 @@ public abstract class Command {
     }
 
     public void execute(String s, RequesterPrx proxy){
-        startTime = System.currentTimeMillis();
+        startTime = System.nanoTime() / 1000;
         executeCommand(s, proxy);
-        endTime = System.currentTimeMillis();
+        endTime = System.nanoTime() / 1000;
     }
 
     protected void executeCommand(String s, RequesterPrx proxy){}

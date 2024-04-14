@@ -1,7 +1,8 @@
 ## Aqui se definira el script que se encargara de hacer deploy solo
 
 server="hgrid5"
-clients=("hgrid6" "hgrid7" "hgrid8" "hgrid9" "hgrid10" "hgrid11" "hgrid12" "hgrid13" "hgrid15")
+clients=("hgrid6" "hgrid7" "hgrid8" "hgrid9" "hgrid10"
+        "hgrid11" "hgrid12" "hgrid13" "hgrid14" "hgrid15" "hgrid17")
 
 scp ../server/build/libs/server.jar "swarch@$server:Documents/JFCandJCR/"
 

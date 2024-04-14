@@ -18,6 +18,8 @@ public class Client
     private static RequesterPrx clientProxy;
     private static ReceiverPrx serverProxy;
 
+    public static long startTime;
+
 
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -62,24 +64,37 @@ public class Client
 
         username = System.getProperty("user.name");
         hostname = java.net.InetAddress.getLocalHost().getHostName();
+        String hostAndUser = username + "@" + hostname;
+
+        System.out.println(welcome(hostAndUser));
 
         while(sentinel){
-            String hostAndUser = username + "@" + hostname + ": ";
-            System.out.print(hostAndUser);
+            System.out.println(menu());
             String line = reader.readLine();
 
-            String request = hostAndUser + line;
+            String request = hostAndUser+": "+line;
 
             if(!line.equalsIgnoreCase("exit")){
                 sendRequest(request);
             } else{
                 sentinel = false;
-                sendRequest(request);
+                System.out.println("See you later!!");
             }
         }
     }
 
     private static void sendRequest(String request){
+        startTime = System.nanoTime() / 1000;
         serverProxy.printString(clientProxy, request);
+    }
+
+    private static String welcome(String userHost){
+        return  "||          Hello "+userHost+"!!!           ||\n" +
+                "||        Welcome to HelloWorld app        ||\n" +
+                "=============================================";
+    }
+
+    private static String menu(){
+        return "Please enter a command or exit to (really? exit to exit)";
     }
 }
