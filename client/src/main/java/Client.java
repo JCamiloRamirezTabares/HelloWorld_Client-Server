@@ -18,6 +18,7 @@ public class Client
     private static RequesterPrx clientProxy;
     private static ReceiverPrx serverProxy;
 
+    private static long totalRequests;
     public static long startTime;
 
 
@@ -31,6 +32,7 @@ public class Client
     public static void initializeClient(String[] args){
         try(Communicator communicator = Util.initialize(args, "config.client"))
         {
+            totalRequests = 0;
             createServerPrx(communicator);
             createClientPrx(communicator);
             processRequest();
@@ -86,6 +88,7 @@ public class Client
     private static void sendRequest(String request){
         startTime = System.nanoTime() / 1000;
         serverProxy.printString(clientProxy, request);
+        totalRequests++;
     }
 
     private static String welcome(String userHost){

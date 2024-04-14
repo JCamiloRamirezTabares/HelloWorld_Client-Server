@@ -11,12 +11,12 @@ public class ReceiverI implements Receiver
     private final ConcurrentHashMap<String, RequesterPrx> clients;
     private final ExecutorService executorService;
     private int totalRequests;
-    private int missing;
+    private int unprocessed;
     private int processed;
 
     public ReceiverI(){
         totalRequests = 0;
-        missing = 0;
+        unprocessed = 0;
         processed = 0;
 
         clients = new ConcurrentHashMap<>();
@@ -42,17 +42,21 @@ public class ReceiverI implements Receiver
                     proxy.printString(response);
                     processed++;
                     System.out.println("Total requests processed: " + processed);
-                    System.out.println("Total requests missed: " + missing);
+                    System.out.println("Total requests unprocessed: " + unprocessed);
+
+                    measuringAttributes();
                 })
                 .exceptionally(e -> {
-                    missing++;
+                    unprocessed++;
                     if (e.getCause() instanceof TimeoutException) {
                         proxy.printString("Timeout occurred, unable to complete your request :c");
                     } else {
                         proxy.printString("Task cannot be processed: " + e.getMessage());
                     }
                     System.out.println("Total requests processed: " + processed);
-                    System.out.println("Total requests missed: " + missing);
+                    System.out.println("Total requests unprocessed: " + unprocessed);
+
+                    measuringAttributes();
 
                     return null;
                 });
@@ -133,11 +137,26 @@ public class ReceiverI implements Receiver
 
     //Quality Attributes
     private long throughput(){
-        return processed / (System.currentTimeMillis()/1000);
+        return processed / (System.nanoTime());
     }
 
+    private long unprocessedRate(){
+        System.out.println("unprocessed " + unprocessed);
+        System.out.println("total " + totalRequests);
+
+
+        return unprocessed / totalRequests;
+    }
+
+    //IsPending to Do
     private long missingRate(){
-        return missing / totalRequests;
+        return 1;
+    }
+
+    private void measuringAttributes(){
+        System.out.println("Throughput: "+throughput() + " requests per nanosecond");
+        System.out.println("Unprocessed Rate: "+unprocessedRate() * 100+"%");
+        System.out.println("=====================================================");
     }
 
 
