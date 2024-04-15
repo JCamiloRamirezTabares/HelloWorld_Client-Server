@@ -16,10 +16,14 @@ declare -A client_fib_numbers=(
 # Bucle sobre cada par clave-valor en el diccionario
 for client in "${!client_fib_numbers[@]}"; do
     fibonacci_number=${client_fib_numbers[$client]}
-    sshpass -p "$password" ssh swarch@"$client" "
+    ssh swarch@"$client" "
     cd Documents/JFCandJCR &&
     {
         echo $fibonacci_number
+        echo 15
+        sleep 1
+        echo 5
+        sleep 120
         echo exit
     } | java -jar client.jar
     "&
