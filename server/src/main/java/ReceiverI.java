@@ -28,13 +28,14 @@ public class ReceiverI implements Receiver
 
     @Override
     public String printString(RequesterPrx requester, String s, Current current) {
-        System.out.println(s);
+       if(s != null || requester != null){
+           System.out.println(s);
 
-        totalRequests++;
-        processRequest(s, requester);
+           totalRequests++;
+           processRequest(s, requester);
 
-
-        return "";
+           return "";
+       } else{return "Null request";}
     }
 
     private void processRequest(String s, RequesterPrx proxy) {

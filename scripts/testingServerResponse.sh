@@ -18,10 +18,12 @@ for client in "${!client_fib_numbers[@]}"; do
     fibonacci_number=${client_fib_numbers[$client]}
     sshpass -p "$password" ssh swarch@"$client" "
     cd Documents/JFCandJCR &&
-    {
-        echo $fibonacci_number
-        echo exit
-    } | java -jar client.jar
+    for i in {1..4}
+    do
+        java -jar client.jar rff rff.txt 24000&
+    done
+
+    exit 0
     "&
 done
 wait
