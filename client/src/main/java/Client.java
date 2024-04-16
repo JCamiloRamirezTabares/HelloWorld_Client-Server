@@ -1,8 +1,7 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.Exception;
+import java.util.Random;
 
 import com.zeroc.Ice.*;
 
@@ -33,9 +32,25 @@ public class Client
         try(Communicator communicator = Util.initialize(args, "config.client"))
         {
             totalRequests = 0;
+            username = System.getProperty("user.name");
+            hostname = java.net.InetAddress.getLocalHost().getHostName();
+
             createServerPrx(communicator);
             createClientPrx(communicator);
-            processRequest();
+
+            if(args.length >= 1 && args[0].equals("spm")){
+                long number_requests;
+                try{
+                    number_requests = Long.parseLong(args[1]);
+                } catch (NumberFormatException e){
+                    number_requests = 1;
+                }
+
+                spammingRequests(number_requests);
+            } else{
+                processRequest();
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,8 +79,6 @@ public class Client
 
         boolean sentinel = true;
 
-        username = System.getProperty("user.name");
-        hostname = java.net.InetAddress.getLocalHost().getHostName();
         String hostAndUser = username + "@" + hostname;
 
         System.out.println(welcome(hostAndUser));
@@ -83,6 +96,28 @@ public class Client
                 System.out.println("See you later!!");
             }
         }
+
+        RequesterI.write("Total requests sent: " + totalRequests);
+        RequesterI.closeFileWriter();
+    }
+
+    private static void spammingRequests(long number_requests) {
+
+        Random random = new Random();
+        int max = 57;
+        int min = 20;
+
+        String hostAndUser = username + "@" + hostname;
+
+        for (int i = 1; i <= number_requests; i++){
+            int numb = random.nextInt(max - min + 1) + min;
+            String request = hostAndUser+": "+numb;
+
+            sendRequest(request);
+        }
+
+        RequesterI.write("Total requests sent: " + totalRequests);
+        RequesterI.closeFileWriter();
     }
 
     private static void sendRequest(String request){
@@ -92,7 +127,8 @@ public class Client
     }
 
     private static String welcome(String userHost){
-        return  "||          Hello "+userHost+"!!!           ||\n" +
+        return  "=============================================\n" +
+                "||          Hello "+userHost+"!!!           ||\n" +
                 "||        Welcome to HelloWorld app        ||\n" +
                 "=============================================";
     }

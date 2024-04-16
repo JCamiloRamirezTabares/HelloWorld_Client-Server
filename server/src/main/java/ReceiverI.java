@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
@@ -8,13 +10,15 @@ import commands.*;
 
 public class ReceiverI implements Receiver
 {
-    private final ConcurrentHashMap<String, RequesterPrx> clients;
-    private final ExecutorService executorService;
+
     private int totalRequests;
     private int unprocessed;
     private int processed;
 
     private long startTime;
+    private final ConcurrentHashMap<String, RequesterPrx> clients;
+    private final ExecutorService executorService;
+    private final String path = "serverReport.txt";
 
     public ReceiverI(){
         totalRequests = 0;
@@ -39,28 +43,30 @@ public class ReceiverI implements Receiver
     }
 
     private void processRequest(String s, RequesterPrx proxy) {
-        System.out.println("Total requests received: " + totalRequests);
         CompletableFuture.supplyAsync(() -> constructResponse(s, proxy), executorService)
                 .orTimeout(60, TimeUnit.SECONDS)
                 .thenAccept(response -> {
                     proxy.printString(response);
                     processed++;
-                    System.out.println("Total requests processed: " + processed);
-                    System.out.println("Total requests unprocessed: " + unprocessed);
 
-                    measuringAttributes();
+                    String report = serverReport();
+                    System.out.println(report);
+
                 })
                 .exceptionally(e -> {
                     unprocessed++;
                     if (e.getCause() instanceof TimeoutException) {
-                        proxy.printString("Timeout occurred, unable to complete your request :c");
+                        proxy.printString("("+s+") ==> " +
+                                "Server Response: Timeout occurred, unable to complete your request :c\n" +
+                                "=====================================================\n");
                     } else {
-                        proxy.printString("Task cannot be processed: " + e.getMessage());
+                        proxy.printString("("+s+") ==> " +
+                                "Server Response: Task cannot be processed: " + e.getMessage() + "\n" +
+                                "=====================================================\n");
                     }
-                    System.out.println("Total requests processed: " + processed);
-                    System.out.println("Total requests unprocessed: " + unprocessed);
 
-                    measuringAttributes();
+                    String report = serverReport();
+                    System.out.println(report);
 
                     return null;
                 });
@@ -80,47 +86,49 @@ public class ReceiverI implements Receiver
         if(requestString != null){
             try {
                 command = new FibonacciComand(requestString);
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("Fibonacci ("+requestString+") ==> Server response to "+hostAndUserName+": ");
             } catch (Exception e) {}
 
             if(requestString.equalsIgnoreCase("listifs")){
                 command = new ListIfsCommand();
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("listifs ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.startsWith("listports")) {
                 requestString = requestString.substring("listports".length()).trim();
                 command = new ListPortsCommand();
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("listports ("+requestString+") ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.startsWith("!")) {
                 requestString = requestString.substring(1).trim();
                 command = new ExecuteCommand();
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("! ("+requestString+") ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.equalsIgnoreCase("register")) {
                 requestString = hostAndUserName;
                 command = new RegisterCommand(clients);
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("register ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.equalsIgnoreCase(
                     "list clients") || requestString.equalsIgnoreCase("listclients")
             ) {
                 command = new ListClientsCommand(clients);
-                res.append("Server response to " + hostAndUserName + ": ");
+                res.append("list clients ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.startsWith("to")) {
                 requestString = hostAndUserName + " " + requestString;
                 command = new SendToCommand(clients);
+                res.append(requestString+") ==> Server response to "+hostAndUserName+": ");
             }
 
             if(requestString.startsWith("BC") || requestString.startsWith("bc")) {
                 requestString = requestString.substring(2).trim();
                 command = new BroadcastCommand(clients);
+                res.append("BC ("+requestString+") ==> Server response to "+hostAndUserName+": ");
             }
 
 
@@ -132,7 +140,7 @@ public class ReceiverI implements Receiver
         }
 
         res.append(command.getOutput() + "\n");
-        res.append("=====================================================");
+        res.append("=====================================================\n");
         System.out.println("Server latency: " + command.getLatency() + " microseconds");
 
         return res.toString();
@@ -157,19 +165,33 @@ public class ReceiverI implements Receiver
         return 1;
     }
 
-    private void measuringAttributes(){
-        System.out.println("Throughput: "+throughput() + " requests per second");
-        System.out.println("Unprocessed Rate: "+unprocessedRate() * 100+"%");
-        System.out.println("=====================================================");
+    private String measuringAttributes(){
+        return "Throughput: "+throughput() + " requests per second\n" +
+                "Unprocessed Rate: "+unprocessedRate() * 100+"%\n" +
+                "=====================================================";
     }
 
+    private String serverReport(){
+        String report = "Total requests received: " + totalRequests +"\n" +
+                        "Total requests processed: " + processed +"\n" +
+                        "Total requests unprocessed: " + unprocessed +"\n\n" +
+                        "Measuring Attributes: \n" +
+                        measuringAttributes();
 
+        try {
+            FileWriter writer = new FileWriter(path, false);
+            writer.write(report);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error handling the FileWriter: " + e.getMessage());
+        }
 
-    private void stopExecutorService() {
+        return report;
+    }
+
+    public void closeExecutorService(){
         executorService.shutdown();
     }
 
-    private void serverShutdown(){
-        Server.shutdown();
-    }
 }

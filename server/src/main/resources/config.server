@@ -8,5 +8,3 @@ Server.Endpoints=tcp -p 9099
 # Only listen on the ZeroTier's LIASOn1 interface by default.
 #
 Ice.Default.Host=localhost
-
-Ice.Default.InvocationTimeout=1000

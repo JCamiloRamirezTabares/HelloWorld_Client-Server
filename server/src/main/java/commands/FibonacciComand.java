@@ -20,7 +20,7 @@ public class FibonacciComand extends Command{
         String out = "";
 
         if (number.isPositiveInteger()) {
-            out = "Fibonacci of (" + number.getNumber() + "): " + fibonacci(number.getNumber()) + "\n";
+            out = fibonacci(number.getNumber()) + "\n";
             out += number.primeFactors();
         } else {
             out = "Negative Number hasn't prime factors";
@@ -56,7 +56,7 @@ class Number {
             primeFacts = num + " hasn't prime factors";
         } else {
             int cPrime = 2;
-            primeFacts += "Prime factors: ";
+            primeFacts += "Prime factors of ("+num+") ==> ";
 
             while (num > 1) {
                 if (num % cPrime == 0) {

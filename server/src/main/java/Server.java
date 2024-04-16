@@ -1,6 +1,10 @@
 import com.zeroc.Ice.*;
 import com.zeroc.Ice.Object;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class Server
 {
 
@@ -27,12 +31,6 @@ public class Server
         Object servent = new ReceiverI();
         adapter.add(servent, Util.stringToIdentity("Receiver"));
         adapter.activate();
-    }
-
-    public static void shutdown(){
-        if (communicator != null) {
-            communicator.shutdown();
-        }
     }
 
 }
