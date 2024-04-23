@@ -6,12 +6,8 @@ public class FibonacciComand extends Command{
 
     private Number number;
 
-    public FibonacciComand(String s){
-        try {
-            number = new Number(s);
-        } catch (Exception e) {
-            setOutput("Error processing input: " + e.getMessage());
-        }
+    public FibonacciComand(String s) throws NumberFormatException{
+        number = new Number(s);
     }
     
     @Override
@@ -41,7 +37,7 @@ public class FibonacciComand extends Command{
 
 class Number {
     private long num;
-    public Number(String n){
+    public Number(String n) throws NumberFormatException{
         num = Long.parseLong(n);
     }
 

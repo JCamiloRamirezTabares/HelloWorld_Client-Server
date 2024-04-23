@@ -1,0 +1,8 @@
+Total requests received: 6
+Total requests processed: 6
+Total requests unprocessed: 0
+
+Measuring Attributes: 
+Throughput: 0.071 requests per second
+Unprocessed Rate: 0.0%
+=====================================================

@@ -5,7 +5,7 @@ clients=("xhgrid6" "xhgrid7")
 
 
 
-#scp ../server/build/libs/server.jar "swarch@$server:Documents/JFCandJCR/"
+scp ../server/build/libs/server.jar "swarch@$server:Documents/JFCandJCR/"
 
 
 for client in "${clients[@]}"

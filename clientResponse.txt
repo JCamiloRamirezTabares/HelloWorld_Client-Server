@@ -1,0 +1,25 @@
+Fibonacci (BC hola a todos) ==> Server response to juanc@JuanK: BC (hola a todos) ==> Server response to juanc@JuanK: The message could not be sent because there are no registered clients
+=====================================================
+Fibonacci (list clients) ==> Server response to juanc@JuanK: list clients ==> Server response to juanc@JuanK: Registered clients: []
+=====================================================
+Fibonacci (register) ==> Server response to juanc@JuanK: register ==> Server response to juanc@JuanK: The client has been successfully registered
+=====================================================
+Fibonacci (list clients) ==> Server response to juanc@JuanK: list clients ==> Server response to juanc@JuanK: Registered clients: [juanc@JuanK]
+=====================================================
+"Hola a todos"Fibonacci (BC "Hola a todos") ==> Server response to juanc@JuanK: BC ("Hola a todos") ==> Server response to juanc@JuanK: The message has been sent to all clients registered on the server
+=====================================================
+juanc@JuanK say: "Hola soy yo mismo!!"Fibonacci (to juanc@JuanK "Hola soy yo mismo!!") ==> Server response to juanc@JuanK: juanc@JuanK to juanc@JuanK "Hola soy yo mismo!!") ==> Server response to juanc@JuanK: 
+=====================================================
+Command not found
+=====================================================
+list clients ==> Server response to juanc@JuanK: Registered clients: []
+=====================================================
+BC ("Hola a todos!!") ==> Server response to juanc@JuanK: The message could not be sent because there are no registered clients
+=====================================================
+Fibonacci (34) ==> Server response to juanc@JuanK: 5702887
+Prime factors of (34) ==> 2, 17, 
+=====================================================
+register ==> Server response to juanc@JuanK: The client has been successfully registered
+=====================================================
+list clients ==> Server response to juanc@JuanK: Registered clients: [juanc@JuanK]
+=====================================================

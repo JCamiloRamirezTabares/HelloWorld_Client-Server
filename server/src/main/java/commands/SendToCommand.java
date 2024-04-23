@@ -27,7 +27,7 @@ public class SendToCommand extends Command{
             RequesterPrx receiverPrx = map.get(receiver);
 
             if(receiverPrx != null){
-                receiverPrx.printString(receiver + " say: " + message);
+                receiverPrx.printString(sender + " say: " + message);
             } else{
                 setOutput("The receiver is not registered");
             }

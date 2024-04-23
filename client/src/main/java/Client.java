@@ -38,15 +38,18 @@ public class Client
             createServerPrx(communicator);
             createClientPrx(communicator);
 
-            if(args.length >= 1 && args[0].equals("spm")){
+            if(args.length >= 2 && args[0].equals("spm")){
                 long number_requests;
+                long number;
                 try{
                     number_requests = Long.parseLong(args[1]);
+                    number = Long.parseLong(args[2]);
                 } catch (NumberFormatException e){
                     number_requests = 1;
+                    number = 21;
                 }
 
-                spammingRequests(number_requests);
+                spammingRequests(number, number_requests);
             } else{
                 processRequest();
             }
@@ -101,7 +104,7 @@ public class Client
         RequesterI.closeFileWriter();
     }
 
-    private static void spammingRequests(long number_requests) {
+    private static void spammingRequests(long number, long number_requests) {
 
         Random random = new Random();
         int max = 57;
@@ -110,7 +113,7 @@ public class Client
         String hostAndUser = username + "@" + hostname;
 
         for (int i = 1; i <= number_requests; i++){
-            int numb = random.nextInt(max - min + 1) + min;
+            long numb = number;
             String request = hostAndUser+": "+numb;
 
             sendRequest(request);

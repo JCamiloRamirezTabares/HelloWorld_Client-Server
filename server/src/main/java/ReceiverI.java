@@ -2,6 +2,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import AppInterfaces.Receiver;
 import AppInterfaces.RequesterPrx;
@@ -11,9 +12,9 @@ import commands.*;
 public class ReceiverI implements Receiver
 {
 
-    private int totalRequests;
-    private int unprocessed;
-    private int processed;
+    private AtomicInteger totalRequests;
+    private AtomicInteger unprocessed;
+    private AtomicInteger processed;
 
     private long startTime;
     private final ConcurrentHashMap<String, RequesterPrx> clients;
@@ -21,9 +22,9 @@ public class ReceiverI implements Receiver
     private final String path = "serverReport.txt";
 
     public ReceiverI(){
-        totalRequests = 0;
-        unprocessed = 0;
-        processed = 0;
+        totalRequests = new AtomicInteger(0);
+        unprocessed = new AtomicInteger(0);
+        processed = new AtomicInteger(0);
 
         clients = new ConcurrentHashMap<>();
         executorService = Executors.newCachedThreadPool();
@@ -35,7 +36,7 @@ public class ReceiverI implements Receiver
        if(s != null || requester != null){
            System.out.println(s);
 
-           totalRequests++;
+           totalRequests.incrementAndGet();
            processRequest(s, requester);
 
            return "";
@@ -47,14 +48,14 @@ public class ReceiverI implements Receiver
                 .orTimeout(60, TimeUnit.SECONDS)
                 .thenAccept(response -> {
                     proxy.printString(response);
-                    processed++;
+                    processed.incrementAndGet();
 
                     String report = serverReport();
                     System.out.println(report);
 
                 })
                 .exceptionally(e -> {
-                    unprocessed++;
+                    unprocessed.incrementAndGet();
                     if (e.getCause() instanceof TimeoutException) {
                         proxy.printString("("+s+") ==> " +
                                 "Server Response: Timeout occurred, unable to complete your request :c\n" +
@@ -76,12 +77,12 @@ public class ReceiverI implements Receiver
     private String constructResponse(String request, RequesterPrx proxy){
 
         StringBuilder res = new StringBuilder();
-        Command command = new NonCommand();
+        Command command;
         String[] parts = request.split(":");
 
         String hostAndUserName = parts[0];
         String requestString = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length)).trim();
-        ;
+
 
         if(requestString != null){
             try {
@@ -92,43 +93,33 @@ public class ReceiverI implements Receiver
             if(requestString.equalsIgnoreCase("listifs")){
                 command = new ListIfsCommand();
                 res.append("listifs ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.startsWith("listports")) {
+            } else if(requestString.startsWith("listports")) {
                 requestString = requestString.substring("listports".length()).trim();
                 command = new ListPortsCommand();
                 res.append("listports ("+requestString+") ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.startsWith("!")) {
+            } else if(requestString.startsWith("!")) {
                 requestString = requestString.substring(1).trim();
                 command = new ExecuteCommand();
                 res.append("! ("+requestString+") ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.equalsIgnoreCase("register")) {
+            } else if(requestString.equalsIgnoreCase("register")) {
                 requestString = hostAndUserName;
                 command = new RegisterCommand(clients);
-                res.append("register ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.equalsIgnoreCase(
+                res.append("(register) ==> Server response to "+hostAndUserName+": ");
+            } else if(requestString.equalsIgnoreCase(
                     "list clients") || requestString.equalsIgnoreCase("listclients")
             ) {
                 command = new ListClientsCommand(clients);
-                res.append("list clients ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.startsWith("to")) {
+                res.append("(list clients) ==> Server response to "+hostAndUserName+": ");
+            } else if(requestString.startsWith("to")) {
                 requestString = hostAndUserName + " " + requestString;
                 command = new SendToCommand(clients);
-                res.append(requestString+") ==> Server response to "+hostAndUserName+": ");
-            }
-
-            if(requestString.startsWith("BC") || requestString.startsWith("bc")) {
+                res.append("("+requestString+") ==> Server response to "+hostAndUserName+": ");
+            } else if(requestString.startsWith("BC") || requestString.startsWith("bc")) {
                 requestString = requestString.substring(2).trim();
                 command = new BroadcastCommand(clients);
                 res.append("BC ("+requestString+") ==> Server response to "+hostAndUserName+": ");
+            } else {
+                command = new NonCommand();
             }
 
 
@@ -150,13 +141,13 @@ public class ReceiverI implements Receiver
     //Quality Attributes
     private double throughput(){
         long currentTime = System.currentTimeMillis() / 1000;
-        double throughput = (double) processed / (currentTime - startTime);
+        double throughput = (double) processed.get() / (currentTime - startTime);
         return Math.round(throughput * 1000) / 1000.0;
     }
 
 
     private double unprocessedRate(){
-        double rate = (double) unprocessed / totalRequests;
+        double rate = (double) unprocessed.get() / totalRequests.get();
         return Math.round(rate * 1000) / 1000.0;
     }
 
