@@ -9,3 +9,7 @@ Esta implementacion soporta los siguientes comandos:
 - **listifs**                            ==> Este comando hara que el servidor muestre en consola las interfaces logicas que tiene configuradas.
 - **listports [Alguna direccion IPv4]**  ==> Este comando hara que el servidor muestre en consola los puertos y servicios abiertos en dicha direccion.
 - **! [Alguna cadena]** ==> El servidor mostrara en consola el resultado de ejecutar [Alguna cadena] en el sistema.
+- **list clients** ==> Lista el numero de clientes registrados en el servidor.
+- **register** ==> Registra al cliente actual en el servidor.
+- **to [client] [Mensaje]** ==> Envia [Mensaje] a [client], si y solo si, [client] esta registrado en el servidor.
+- **BC [Mensaje]** ==> Envia [Mensaje] a todos los clientes registrados en el servidor (incluido el client actual).
